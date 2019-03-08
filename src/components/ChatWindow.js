@@ -101,7 +101,7 @@ class ChatWindow extends Component {
         <Card className={classes.card}>
           <CardContent>
             <List className={classes.root}>
-              {messages.reverse().map(msg => (
+              {messages.map(msg => (
                 <div key={msg.timestamp}>
                   <ListItem alignItems="flex-start">
                     <ListItemAvatar>
