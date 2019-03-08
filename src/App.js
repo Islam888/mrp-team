@@ -38,12 +38,14 @@ class App extends Component {
   };
   componentDidMount() {
     this.loadMessages()
+    
   }
   logIn = (email, password) => {
     fire
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(data => {
+        console.log(firebase.auth().currentUser)
         this.setState({
           userEmail: data.user.email
         });
@@ -79,6 +81,7 @@ class App extends Component {
   directToHomePage = () => {
     const homeLink = document.getElementById("home");
     homeLink.click();
+    
   };
 
   isUserSignedIn = () => firebase.auth().currentUser;
@@ -129,12 +132,10 @@ class App extends Component {
     var query = firebase.firestore()
                     .collection('messages')
                     .orderBy('timestamp', 'desc')
-                    .limit(3)
-                    
-    
+                    .limit(10)       
     // Start listening to the query.
     query.onSnapshot((snapshot) => {
-      snapshot.docChanges().forEach((change) => {
+      snapshot.docChanges().reverse().forEach((change) => {
         if (change.type === 'removed') {
           this.deleteMessage(change.doc.id);
         } else {
