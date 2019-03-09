@@ -14,6 +14,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Send from "@material-ui/icons/Send";
 
 import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
@@ -25,7 +26,7 @@ const styles = theme => ({
   wrapper: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   root: {
     width: "100%",
@@ -62,8 +63,8 @@ const styles = theme => ({
   },
   card: {
     width: "100%",
-    maxWidth: 680,
-    marginTop: 80,
+    maxHeight: "calc(100vh - 105px)",
+    marginTop: 60,
     justifyContent: "center",
     alignItems: "center"
   },
@@ -77,13 +78,35 @@ const styles = theme => ({
   },
   pos: {
     marginBottom: 12
+  },
+  listItem: {
+    whiteSpace: "pre-wrap"
+  },
+  userName: {
+    fontWeight: "600",
+    fontSize: 14
+  },
+  message: {
+    fontWeight: "500",
+    background: "#eee",
+    padding: 3,
+    borderRadius: 3
   }
 });
 
 class ChatWindow extends Component {
+  componentDidMount() {
+    const ChatList = document.getElementById('list')
+    ChatList.scrollTop = 10000
+  }
+  componentDidUpdate() {
+    const ChatList = document.getElementById('list')
+    ChatList.scrollTop = 10000
+  }
   handleSendBtnClick = () => {
     const messageInputElement = document.getElementById("message-textField");
     this.props.sendMessage(messageInputElement.value, messageInputElement);
+    console.log(messageInputElement.value)
   };
 
   handleChange = e => {
@@ -100,70 +123,24 @@ class ChatWindow extends Component {
       <div className={classes.wrapper}>
         <Card className={classes.card}>
           <CardContent>
-            <List className={classes.root}>
+            <CardHeader title="Team Chat"></CardHeader>
+            <List id="list" className={classes.root}>
               {messages.map(msg => (
                 <div key={msg.timestamp}>
                   <ListItem alignItems="flex-start">
                     <ListItemAvatar>
-                      <Avatar src="https://randomuser.me/api/portraits/men/97.jpg" />
+                      <Avatar src={msg.profilePicUrl} />
                     </ListItemAvatar>
-                    <ListItemText primary={msg.name} secondary={msg.text} />
+                    <ListItemText 
+                    className={classes.listItem} 
+                    primary={msg.name} 
+                    secondary={msg.text}
+                    primaryTypographyProps={{className: classes.userName}}
+                    secondaryTypographyProps={{className: classes.message}}
+                     />
                   </ListItem>
                 </div>
               ))}
-
-              {/* <Divider style={{ backgroundColor: "#d6d6d6" }} /> */}
-
-              {/*   <Divider style={{ backgroundColor: "#d6d6d6" }} />
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar src="https://randomuser.me/api/portraits/men/97.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Mohamed Ezatly"
-                  secondary="Wish I could come, but I'm out of town this…"
-                />
-              </ListItem>
-              <Divider style={{ backgroundColor: "#d6d6d6" }} />
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar src="https://randomuser.me/api/portraits/men/60.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Mohamed Ezatly"
-                  secondary="Wish I could come, but I'm out of town this…"
-                />
-              </ListItem>
-              <Divider style={{ backgroundColor: "#d6d6d6" }} />
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar src="https://randomuser.me/api/portraits/men/60.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Mohamed Ezatly"
-                  secondary="Wish I could come, but I'm out of town this…"
-                />
-              </ListItem>
-              <Divider style={{ backgroundColor: "#d6d6d6" }} />
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar src="https://pbs.twimg.com/profile_images/790582305064648704/ty5Armt_.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Mohamed Ezatly"
-                  secondary="Wish I could come, but I'm out of town this…"
-                />
-              </ListItem>
-              <Divider style={{ backgroundColor: "#d6d6d6" }} />
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar src="https://pbs.twimg.com/profile_images/790582305064648704/ty5Armt_.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Mohamed Ezatly"
-                  secondary="Wish I could come, but I'm out of town this…"
-                />
-              </ListItem> */}
             </List>
             <TextField
               id="message-textField"
