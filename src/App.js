@@ -34,7 +34,8 @@ const GlobalStyle = createGlobalStyle`
 class App extends Component {
   state = {
     btnDisableStatus: true, //send btn disabled by default
-    msgs: []
+    msgs: [],
+    currentUser: {}
   };
   componentDidMount() {
     this.loadMessages()
@@ -45,43 +46,66 @@ class App extends Component {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(data => {
-        console.log(firebase.auth().currentUser)
-        this.setState({
-          userEmail: data.user.email
-        });
+        console.log(data)
+        firebase
+        .firestore()
+        .collection('users')
+        .doc(data.user .email)
+        .get()
+        .then(doc => {
+          console.log(doc.data())
+          this.setState({
+            currentUser: {
+              name: doc.data().name,
+              email: doc.data().email,
+              employeeNo: doc.data().employeeNo,
+              mobileNo: doc.data().mobileNo,
+              profilePicUrl: doc.data().profilePicUrl,
+              id: doc.data().id,
+            }
+          })
+          this.directToSpecificDashboard(this.state.currentUser.id);
+          console.log("loggedIn");
+        })
       })
       .catch(function(error) {
         console.log(error.message);
       });
-    this.directToSpecificDashboard();
+    
   };
 
   logOut = () => {
+    this.setState({
+      currentUser: {}
+    })
     fire
       .auth()
       .signOut()
-      .then(function() {})
-      .catch(function(error) {
-        console.log(error.message);
+      .then(() => {
+        this.directToHomePage();
+        console.log("loggedOut")
+      })
+      .catch(error => {
+        console.log(error);
       });
-    this.directToHomePage();
+    
   };
 
-  directToSpecificDashboard = () => {
+  directToSpecificDashboard = (userId) => {
     firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        if (user.email === "islam.sayed8@gmail.com") {
-          const islamPanelLink = document.getElementById("islam");
-          islamPanelLink.click();
-        }
+      if (userId) {
+        const userPanel = document.getElementById(userId);
+        userPanel.click();
       }
     });
+      
   };
 
   directToHomePage = () => {
-    const homeLink = document.getElementById("home");
-    homeLink.click();
-    
+      const homeLink = document.getElementById("home");
+      console.log(homeLink)
+      homeLink.click();
+
   };
 
   isUserSignedIn = () => firebase.auth().currentUser;
@@ -108,20 +132,20 @@ class App extends Component {
       .firestore()
       .collection("messages")
       .add({
-        name: "islam",
+        name: this.state.currentUser.name,
         text: message,
-        profilePicUrl: "https://randomuser.me/api/portraits/men/60.jpg",
+        profilePicUrl: this.state.currentUser.profilePicUrl,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       })
       .catch(function(error) {
         console.error("Error writing new message to Firebase Database", error);
-      });
+      }); 
 
   sendMessage = (message, messageInputElement) => {
     if (message && this.isUserSignedIn()) {
+      console.log(message)
       this.saveMessage(message).then(() => {
         this.resetMessageInputElement(messageInputElement);
-        //this.loadMessages();
       });
     }
   };
@@ -140,6 +164,7 @@ class App extends Component {
           this.deleteMessage(change.doc.id);
         } else {
           var message = change.doc.data();
+          console.log(message)
           this.displayMessage(change.doc.id, message);
         }
       });
@@ -173,14 +198,14 @@ class App extends Component {
           </Toolbar>
         </AppBar>
         <Link id="home" to="/" />
-        <Link id="islam" to="/islam" />
-        <Link id="ramzy" to="/ramzy" />
-        <Link id="ezatly" to="/ezatly" />
+        <Link id="islam-sayed" to="/islam-sayed" />
+        <Link id="sherif-ramzy" to="/sherif-ramzy" />
+        <Link id="mohamed-ezatly" to="/mohamed-ezatly" />
         <Switch>
           <Route exact path="/" render={() => <Login logIn={this.logIn} />} />
           <Route
             exact
-            path="/islam"
+            path="/islam-sayed"
             render={() => (
               <RegularPanel
                 logOut={this.logOut}
@@ -189,12 +214,25 @@ class App extends Component {
                 handleKeyUp={this.toggleButton}
                 btnDisableStatus={this.state.btnDisableStatus}
                 messages={this.state.msgs}
+                currentUser={this.state.currentUser}
+                directToHomePage={this.directToHomePage}
               />
             )}
           />
           <Route
-            path="/ezatly"
-            render={() => <ManagerPanel logOut={this.logOut} />}
+            path="/mohamed-ezatly"
+            render={() => (
+            <ManagerPanel
+               logOut={this.logOut}
+               sendMessage={this.sendMessage}
+                handleChange={this.toggleButton}
+                handleKeyUp={this.toggleButton}
+                btnDisableStatus={this.state.btnDisableStatus}
+                messages={this.state.msgs}
+                currentUser={this.state.currentUser}
+                directToHomePage={this.directToHomePage}
+           />
+           )}
           />
           <Route path="/not-enough-authority" render={() => <Unauthorised />} />
           {/* <Route component={PageNotFound} /> */}
