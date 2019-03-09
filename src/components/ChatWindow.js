@@ -34,7 +34,6 @@ const styles = theme => ({
     maxHeight: "60vh",
     overflowY: "auto",
     paddingBottom: 0,
-
     backgroundColor: theme.palette.background.paper
   },
 
@@ -79,19 +78,24 @@ const styles = theme => ({
   pos: {
     marginBottom: 12
   },
-  listItem: {
+  listItemText: {
     whiteSpace: "pre-wrap"
   },
   userName: {
     fontWeight: "600",
-    fontSize: 14
+    fontSize: 14,
+    display: "block",
   },
   message: {
-    fontWeight: "500",
-    background: "#eee",
+    fontWeight: "600",
+    background: "#e6f7ff",
     padding: 3,
-    borderRadius: 3
-  }
+    borderRadius: 3,
+    display: "inline-block",
+    color: "#222"
+
+  },
+
 });
 
 class ChatWindow extends Component {
@@ -117,8 +121,15 @@ class ChatWindow extends Component {
     this.props.handleKeyUp(e.target.value);
   };
 
+  setBackground = (name, currentUser) => {
+    console.log(name, currentUser.name)
+    if (name === currentUser.name) {
+      return "#ffe6f7"
+    }
+  }
+
   render() {
-    const { classes, messages } = this.props;
+    const { classes, messages, currentUser } = this.props;
     return (
       <div className={classes.wrapper}>
         <Card className={classes.card}>
@@ -126,17 +137,17 @@ class ChatWindow extends Component {
             <CardHeader title="Team Chat"></CardHeader>
             <List id="list" className={classes.root}>
               {messages.map(msg => (
-                <div key={msg.timestamp}>
-                  <ListItem alignItems="flex-start">
+                <div key={msg.timestamp} className={classes.listDiv}>
+                  <ListItem alignItems="flex-start" className={classes.listItem} >
                     <ListItemAvatar>
                       <Avatar src={msg.profilePicUrl} />
                     </ListItemAvatar>
                     <ListItemText 
-                    className={classes.listItem} 
+                    className={classes.listItemText} 
                     primary={msg.name} 
                     secondary={msg.text}
                     primaryTypographyProps={{className: classes.userName}}
-                    secondaryTypographyProps={{className: classes.message}}
+                    secondaryTypographyProps={{className: classes.message, style:{background: this.setBackground(msg.name, currentUser)}}}
                      />
                   </ListItem>
                 </div>
