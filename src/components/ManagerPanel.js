@@ -128,6 +128,7 @@ class ManagerPanel extends Component {
             handleKeyUp={this.props.handleKeyUp}
             btnDisableStatus={this.props.btnDisableStatus}
             messages={this.props.messages}
+            currentUser={this.props.currentUser}
           />
         </main>
       </div>
