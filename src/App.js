@@ -164,7 +164,6 @@ class App extends Component {
           this.deleteMessage(change.doc.id);
         } else {
           var message = change.doc.data();
-          console.log(message)
           this.displayMessage(change.doc.id, message);
         }
       });
