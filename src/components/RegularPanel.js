@@ -54,6 +54,16 @@ class RegularPanel extends Component {
     mobileOpen: false
   };
 
+  componentDidMount() {
+    this.checkUser(this.props.currentUser)
+  }
+//to prevent loading panel via url manual writing. If no user signed in direct to home page.
+  checkUser = user => {
+    if(!user.name) {
+      this.props.directToHomePage()
+    }
+  }
+
   handleDrawerToggle = () => {
     this.setState(state => ({ mobileOpen: !state.mobileOpen }));
   };
@@ -122,7 +132,6 @@ class RegularPanel extends Component {
           </Hidden>
         </nav>
         <main className={classes.content}>
-          {/* <div className={classes.toolbar} /> */}
           <ChatWindow
             sendMessage={this.props.sendMessage}
             handleChange={this.props.handleChange}
