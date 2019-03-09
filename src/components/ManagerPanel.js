@@ -12,12 +12,13 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import styled from "styled-components";
+import ChatWindow from "./ChatWindow";
 
 const drawerWidth = 240;
 
 const styles = theme => ({
   root: {
-    flexGrow: 1
+    display: "flex"
   },
   drawer: {
     [theme.breakpoints.up("sm")]: {
@@ -52,6 +53,16 @@ class ManagerPanel extends Component {
   state = {
     mobileOpen: false
   };
+
+  componentDidMount() {
+    this.checkUser(this.props.currentUser)
+  }
+//to prevent loading panel via url manual writing. If no user signed in direct to home page.
+  checkUser = user => {
+    if(!user.name) {
+      this.props.directToHomePage()
+    }
+  }
 
   handleDrawerToggle = () => {
     this.setState(state => ({ mobileOpen: !state.mobileOpen }));
@@ -111,8 +122,13 @@ class ManagerPanel extends Component {
           </Hidden>
         </nav>
         <main className={classes.content}>
-          <div className={classes.toolbar} />
-
+        <ChatWindow
+            sendMessage={this.props.sendMessage}
+            handleChange={this.props.handleChange}
+            handleKeyUp={this.props.handleKeyUp}
+            btnDisableStatus={this.props.btnDisableStatus}
+            messages={this.props.messages}
+          />
         </main>
       </div>
     );
