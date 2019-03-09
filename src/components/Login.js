@@ -16,23 +16,27 @@ class Login extends Component {
   
   
   componentDidMount() {
-     const text = document.querySelector('.text')
+    this.animateLogo()
+  }
+
+
+  animateLogo = () => {
+    const text = document.querySelector('.text')
     const ghosts = document.getElementsByClassName('ghost')
     window.onload = () => {
       setTimeout(() => {
         text.classList.remove('hidden')
         Array.prototype.forEach.call(ghosts, ghost => ghost.style.opacity = "1")
-      }, 500); 
+      }, 1500); 
     } 
   }
-
 
   handleClick = e => {
     e.preventDefault();
     var pass = document.getElementById("password").value;
     var email = document.getElementById("email").value;
-    console.log(email, pass);
     this.props.logIn(email, pass);
+    console.log(email, pass)
   };
   
   render() {
