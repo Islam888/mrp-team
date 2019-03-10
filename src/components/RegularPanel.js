@@ -53,10 +53,10 @@ class RegularPanel extends Component {
   state = {
     mobileOpen: false
   };
-
-  componentDidMount() {
+//test
+  /* componentDidMount() {
     this.checkUser(this.props.currentUser)
-  }
+  } */
 //to prevent loading panel via url manual writing. If no user signed in direct to home page.
   checkUser = user => {
     if(!user.name) {
@@ -69,7 +69,7 @@ class RegularPanel extends Component {
   };
 
   handleLogOutClick = e => {
-    e.preventDefault();
+    //e.preventDefault();
     this.props.logOut();
   };
 
@@ -138,6 +138,8 @@ class RegularPanel extends Component {
             handleKeyUp={this.props.handleKeyUp}
             btnDisableStatus={this.props.btnDisableStatus}
             messages={this.props.messages}
+            currentUser={this.props.currentUser}
+			handleKeyDown={this.props.handleKeyDown}
           />
         </main>
       </div>
