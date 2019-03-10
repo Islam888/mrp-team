@@ -35,11 +35,35 @@ class App extends Component {
   state = {
     btnDisableStatus: true, //send btn disabled by default
     msgs: [],
-    currentUser: {}
+    currentUser: {},
+	isErrorConnectionSnackbarOpen: false,
+	isSuccessSnackbarOpen: false,
+	isErrorLoginSnackbarOpen: false,
+	errorMessage: "",
   };
   componentDidMount() {
     this.loadMessages()
+	this.checkConnection()
     
+  }
+  checkConnection = () => {
+	  window.addEventListener('offline', () => {
+		this.setState({
+			 isErrorConnectionSnackbarOpen: true
+		 })
+		 this.setState({
+				isSuccessSnackbarOpen: false
+			})
+	  })
+	  window.addEventListener('online', () => {
+
+			this.setState({
+				isErrorConnectionSnackbarOpen: false
+			})
+			this.setState({
+				isSuccessSnackbarOpen: true
+			})
+	  })
   }
   logIn = (email, password) => {
     fire
@@ -68,23 +92,47 @@ class App extends Component {
           console.log("loggedIn");
         })
       })
-      .catch(function(error) {
-        console.log(error.message);
+      .catch(error => {
+		  if (error.code === "auth/user-not-found") {
+			this.setState({
+			  isErrorLoginSnackbarOpen: true,
+		  })
+			this.setState({
+				errorMessage: "User not found!"
+			})
+		  }else if (error.code === "auth/wrong-password") {
+			this.setState({
+			  isErrorLoginSnackbarOpen: true,
+		  })  
+		  this.setState({
+			  errorMessage: "Wrong password!"
+		  })
+		  }else if (error.code === "auth/network-request-failed") {
+			this.setState({
+			  isErrorLoginSnackbarOpen: true,
+		  })  
+		  this.setState({
+			  errorMessage: "Network not available!"
+		  })  
+		  }
+        console.log(error.code);
       });
     
   };
 
   logOut = () => {
-    this.setState({
-      currentUser: {}
-    })
-    fire
+	  
+    firebase
       .auth()
       .signOut()
       .then(() => {
-        this.directToHomePage();
-        console.log("loggedOut")
-      })
+        
+      console.log("loggedOut")
+      this.directToHomePage();
+	  this.setState({
+      currentUser: {}
+    })
+	})
       .catch(error => {
         console.log(error);
       });
@@ -92,7 +140,7 @@ class App extends Component {
   };
 
   directToSpecificDashboard = (userId) => {
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(user => {
       if (userId) {
         const userPanel = document.getElementById(userId);
         userPanel.click();
@@ -102,10 +150,10 @@ class App extends Component {
   };
 
   directToHomePage = () => {
-      const homeLink = document.getElementById("home");
-      console.log(homeLink)
-      homeLink.click();
-
+	  firebase.auth().onAuthStateChanged(user => {
+		const homeLink = document.getElementById("home");
+		homeLink.click();  
+	  })
   };
 
   isUserSignedIn = () => firebase.auth().currentUser;
@@ -184,7 +232,26 @@ class App extends Component {
       div.parentNode.removeChild(div);
     }
   }
-
+	
+	handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    this.setState({ isErrorConnectionSnackbarOpen: false });
+	this.setState({ isSuccessSnackbarOpen: false });
+	this.setState({isErrorLoginSnackbarOpen: false})
+  };
+  
+  checkWhichKey = (e) => {
+	console.log(e.keyCode)
+	if (e.keyCode === 16 && e.keyCode === 13) {
+		console.log('h')
+	}else if (e.keyCode === 13) {
+		e.preventDefault()
+		this.sendMessage(e.target.value, e.target)
+	}
+  }
+  
   render() {
     return (
       <div className="App">
@@ -201,7 +268,17 @@ class App extends Component {
         <Link id="sherif-ramzy" to="/sherif-ramzy" />
         <Link id="mohamed-ezatly" to="/mohamed-ezatly" />
         <Switch>
-          <Route exact path="/" render={() => <Login logIn={this.logIn} />} />
+          <Route exact path="/" render={() => (
+				<Login
+					logIn={this.logIn}
+					isErrorConnectionSnackbarOpen={this.state.isErrorConnectionSnackbarOpen}
+					handleSnackbarClose={this.handleSnackbarClose}
+					isSuccessSnackbarOpen={this.state.isSuccessSnackbarOpen}
+					errorMessage={this.state.errorMessage}
+					isErrorLoginSnackbarOpen={this.state.isErrorLoginSnackbarOpen}
+				/>
+				)} 
+			/>
           <Route
             exact
             path="/islam-sayed"
@@ -215,6 +292,7 @@ class App extends Component {
                 messages={this.state.msgs}
                 currentUser={this.state.currentUser}
                 directToHomePage={this.directToHomePage}
+				handleKeyDown={this.checkWhichKey}
               />
             )}
           />
