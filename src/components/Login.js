@@ -6,15 +6,51 @@ import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
+import ErrorIcon from '@material-ui/icons/Error';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import { withStyles } from '@material-ui/core/styles';
 
 const titleLetters = {
   opacity: '0',
   
 };
 
+const styles1 = theme => ({
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
+  icon: {
+    fontSize: 20,
+  },
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing.unit,
+	//marginTop: 5,
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  errorSnackbarContent: {
+	margin: theme.spacing.unit,
+	background: "#e50000"
+  },
+  successSnackbarContent: {
+	margin: theme.spacing.unit,
+	background: "green"  
+  },
+  snackbar: {
+	  maxWidth: "768px",
+  },
+});
+
+
 class Login extends Component {
-  
-  
+
   componentDidMount() {
     this.animateLogo()
   }
@@ -39,8 +75,14 @@ class Login extends Component {
     console.log(email, pass)
   };
   
+   openSnackBar = () => {
+    this.setState({ open: true });
+  };
+
+  
+
   render() {
-    
+    const { classes, isErrorConnectionSnackbarOpen,isErrorLoginSnackbarOpen, isSuccessSnackbarOpen, handleSnackbarClose, errorMessage } = this.props;
     return (
       <div
         style={{
@@ -95,9 +137,63 @@ class Login extends Component {
               Login
             </Button>
         </form>
+		<Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={isErrorConnectionSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+		<SnackbarContent 
+		  className={classes.errorSnackbarContent} 
+		  message={<span className={classes.message}><ErrorIcon className={classes.icon, classes.iconVariant} />{errorMessage}</span>}
+		  action={
+			  <IconButton onClick={handleSnackbarClose}>
+				<CloseIcon />
+			  </IconButton>
+		  } />
+		</Snackbar>
+		<Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={isErrorLoginSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+		<SnackbarContent 
+		  className={classes.errorSnackbarContent} 
+		  message={<span className={classes.message}><ErrorIcon className={classes.icon, classes.iconVariant} />{errorMessage}</span>}
+		  action={
+			  <IconButton onClick={handleSnackbarClose}>
+				<CloseIcon />
+			  </IconButton>
+		  } />
+		</Snackbar>
+		<Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={isSuccessSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+		<SnackbarContent 
+		  className={classes.successSnackbarContent} 
+		  message={<span className={classes.message}><CheckCircleIcon className={classes.icon, classes.iconVariant} />{"Network Restored."}</span>}
+		  action={
+			  <IconButton  onClick={handleSnackbarClose}>
+				<CloseIcon/>
+			  </IconButton>
+		  } />
+		</Snackbar>
       </div>
     );
   }
 }
 
-export default Login;
+export default withStyles(styles1)(Login);
