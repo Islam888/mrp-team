@@ -30,7 +30,6 @@ const styles = theme => ({
   },
   root: {
     width: "100%",
-    maxWidth: 650,
     maxHeight: "60vh",
     overflowY: "auto",
     paddingBottom: 0,
@@ -53,11 +52,7 @@ const styles = theme => ({
     color: "green"
   },
   textField: {
-    [`& .MuiFilledInput-root-233`]: {
-      borderRadius: 0
-    },
     width: "100%",
-    maxWidth: 650,
     marginTop: 0
   },
   card: {
@@ -88,7 +83,6 @@ const styles = theme => ({
   },
   message: {
     fontWeight: "600",
-    background: "#e6f7ff",
     padding: 3,
     borderRadius: 3,
     display: "inline-block",
@@ -110,7 +104,6 @@ class ChatWindow extends Component {
   handleSendBtnClick = () => {
     const messageInputElement = document.getElementById("message-textField");
     this.props.sendMessage(messageInputElement.value, messageInputElement);
-    console.log(messageInputElement.value)
   };
 
   handleChange = e => {
@@ -120,12 +113,19 @@ class ChatWindow extends Component {
   handleKeyUp = e => {
     this.props.handleKeyUp(e.target.value);
   };
+  
+  handleKeyDown = e => {
+	  this.props.handleKeyDown(e)
+  }
 
   setBackground = (name, currentUser) => {
-    console.log(name, currentUser.name)
     if (name === currentUser.name) {
-      return "#ffe6f7"
-    }
+      //return "#ffe6f7"
+	  return "#ffb3e7"
+    } else {
+		//return "#e6f7ff"
+		return "#b3e7ff"
+	}
   }
 
   render() {
@@ -162,6 +162,7 @@ class ChatWindow extends Component {
               margin="normal"
               onChange={this.handleChange}
               onKeyUp={this.handleKeyUp}
+			  onKeyDown={this.handleKeyDown}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
